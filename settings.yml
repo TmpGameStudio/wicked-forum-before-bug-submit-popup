@@ -1,0 +1,6 @@
+wicked_bugs_category_id: 
+  default: 13
+  description: "The ID of the Wicked Bugs forum category where bug reports are posted and the instructions are displayed"
+local_storage_key: 
+  default: "hideBugSubmitInstructions"
+  description: "The local storage key used to store whether the bug submit instructions have been hidden b"
