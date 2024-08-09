@@ -7,6 +7,7 @@ import PostTextSelection from "discourse/components/post-text-selection";
 import BugReportInstructionsModal from "./bug-report-instructions-modal";
 import {getOwner} from "@ember/application";
 import Component from "@glimmer/component";
+import {schedule} from "@ember/runloop";
 
 export default class BugReportReplyProxyButton extends Component {
     @service modal;
@@ -31,12 +32,11 @@ export default class BugReportReplyProxyButton extends Component {
             return;
         }
 
-        this.toggleShowProxyReplyButton(true);
 
-        // This is needed
-        setTimeout(() => {
+         schedule('afterRender', () => {
+        this.toggleShowProxyReplyButton(true);
             this.toggleMainReplyButton(false);
-        }, 1);
+        });
     }
 
 

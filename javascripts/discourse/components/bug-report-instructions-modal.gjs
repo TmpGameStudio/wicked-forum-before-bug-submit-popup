@@ -2,6 +2,7 @@ import Component from "@glimmer/component";
 import {tracked} from "@glimmer/tracking";
 import { on } from "@ember/modifier";
 import {action} from "@ember/object";
+import {inject as service} from "@ember/service";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
@@ -68,7 +69,7 @@ export default class BugReportInstructionsModal extends Component {
                     <div>
                         <DToggleSwitch
                             @state={{this.dontShowAgain}}
-                            @translatedLabel="Do not show again"
+                            @translatedLabel="I understand the requirements."
                             {{on "click" this.toggleDontShowAgain}}
                         />
 
