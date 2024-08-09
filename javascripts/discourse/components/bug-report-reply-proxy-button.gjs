@@ -103,6 +103,9 @@ export default class BugReportReplyProxyButton extends Component {
      */
     isWickedBugsCategory() {
         const topicController = getOwner(this).lookup("controller:topic");
+        if(!topicController || !topicController.model) {
+            return false;
+        }
         return topicController.model.category_id === this.wickedBugsCategoryId;
     }
 }

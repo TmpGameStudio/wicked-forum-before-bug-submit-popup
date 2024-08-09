@@ -1,3 +1,6 @@
 en:
   theme_metadata:
     description: "This component shows a dialog before the user submits his bug reports."
+  toolbar:
+    open_bug_instructions: "Open Bug Reporting guidelines"
+
