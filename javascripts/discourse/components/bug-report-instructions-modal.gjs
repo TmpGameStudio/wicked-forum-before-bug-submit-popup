@@ -7,15 +7,19 @@ import DModal from "discourse/components/d-modal";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 
 export default class BugReportInstructionsModal extends Component {
+    @service siteSettings;
+    
     @tracked dontShowAgain = false;
 
-    localStorageKey = 'hideBugSubmitInstructions';
+    localStorageKey = undefined;
 
     constructor() {
         super(...arguments);
         if(this.args.model) {
             this.initialized = true;
         }
+
+        this.localStorageKey = settings.local_storage_key;
     }
 
     <template>

@@ -32,6 +32,8 @@ export default class BugReportReplyProxyButton extends Component {
         }
 
         this.toggleShowProxyReplyButton(true);
+
+        // This is needed
         setTimeout(() => {
             this.toggleMainReplyButton(false);
         }, 1);
@@ -69,7 +71,11 @@ export default class BugReportReplyProxyButton extends Component {
         this._showProxyReplyButton = !this._showProxyReplyButton;
     }
 
-
+    /**
+     * Handles the click event on the proxy reply button.
+     * This method shows the BugReportInstructionsModal, toggles the visibility
+     * of the main reply button, and hides the proxy reply button.
+     */
     @action
     onProxyReplyClicked() {
         this.modal.show(BugReportInstructionsModal, {
@@ -83,10 +89,18 @@ export default class BugReportReplyProxyButton extends Component {
         this.toggleShowProxyReplyButton(false);
     }
 
+    /**
+     * Checks if the user has dismissed the bug report instructions.
+     * @returns {boolean} True if the user has dismissed the instructions, false otherwise.
+     */
     userDismissedInstructions() {
         return localStorage.getItem(this.localStorageKey) === 'true';
     }
 
+    /**
+     * Checks if the current topic is in the Wicked Bugs category.
+     * @returns {boolean} True if the topic is in the Wicked Bugs category, false otherwise.
+     */
     isWickedBugsCategory() {
         const topicController = getOwner(this).lookup("controller:topic");
         return topicController.model.category_id === this.wickedBugsCategoryId;
