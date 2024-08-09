@@ -1,0 +1,17 @@
+.bug-info-modal {
+  .d-modal__body {
+    padding: 15px;
+
+    ul {
+      margin-top: 0;
+    }
+    li li {
+      margin-inline-start: 20px;
+    }
+
+    code {
+      font-style: italic;
+    }
+  }
+ 
+}
