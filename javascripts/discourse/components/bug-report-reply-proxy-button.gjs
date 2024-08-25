@@ -12,6 +12,7 @@ import {schedule} from "@ember/runloop";
 export default class BugReportReplyProxyButton extends Component {
     @service modal;
     @service siteSettings;
+     @service router;
 
     localStorageKey = undefined;
     wickedBugsCategoryId = undefined;
@@ -98,14 +99,23 @@ export default class BugReportReplyProxyButton extends Component {
     }
 
     /**
-     * Checks if the current topic is in the Wicked Bugs category.
-     * @returns {boolean} True if the topic is in the Wicked Bugs category, false otherwise.
-     */
-    isWickedBugsCategory() {
-        const topicController = getOwner(this).lookup("controller:topic");
-        if(!topicController || !topicController.model) {
-            return false;
-        }
-        return topicController.model.category_id === this.wickedBugsCategoryId;
+   * Checks if the current page is in the Wicked Bugs category.
+   * @returns {boolean} True if the page is in the Wicked Bugs category, false otherwise.
+   */
+  isWickedBugsCategory() {
+    // First, check the URL in case user creates new topic under WickedBugs category
+    const currentURL = this.router.currentURL;
+    if (currentURL.includes("/c/wicked-bug-reporting/13")) {
+      return true;
     }
+
+    // If URL check fails, fall back to checking the topic controller
+    const topicController = getOwner(this).lookup("controller:topic");
+
+    if (!topicController || !topicController.model) {
+      return false;
+    }
+
+    return topicController.model.category_id === this.wickedBugsCategoryId;
+  }
 }
