@@ -1,4 +1,12 @@
+$color-not-found: #d56262;
+$color-hint-found: #62d562;
+
 .bug-info-modal {
+  .d-modal__footer {
+    display: flex;
+    justify-content: space-between;
+  }
+
   .d-modal__body {
     padding: 15px;
 
@@ -26,33 +34,27 @@
     code {
       font-style: italic;
     }
-  }
 
-  .not-found {
-    color: #d56262;
+    .not-found {
+      color: $color-not-found;
+    }
+    .hint-found {
+      color: $color-hint-found;
+    }
+  
+   
+    .d-icon {
+      margin-right: 8px;
+      position: relative;
+      top: 2px;
+  
+      &-exclamation-triangle {
+        color: $color-not-found;
+      }
+  
+      &-check-circle {
+        color: $color-hint-found;
+      }
+    }
   }
-  .hint-found {
-    color: #62d562;
-  }
-
-  .d-modal__footer {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .d-icon-exclamation-triangle {
-    color: #d56262;
-  }
-
-  .d-icon-check-circle {
-    color: #62d562;
-  }
-
-  .d-icon {
-    margin-right: 8px;
-    position: relative;
-    top: 2px;
-  }
-
-
 }

@@ -13,30 +13,6 @@ export default class BugReportInstructionsModal extends Component {
 
     localStorageKey = undefined;
 
-    guidelines = [
-        { id: 1, text: "Respond in English." },
-        { id: 2, text: "Attach a picture/video showing the bug." },
-        { id: 3, text: "Include log files:", subItems: [
-                "Player.log and Player-prev.log",
-                "DataStore folder: %USERPROFILE%\\AppData\\LocalLow\\Moon Studios\\NoRestForTheWicked"
-            ]},
-        { id: 4,
-            text: "If you experience crashes, include files from: %USERPROFILE%\\AppData\\LocalLow\\Moon Studios\\NoRestForTheWicked\\backtrace\\crashpad\\reports" },
-        { id: 5, text: "Include the dxdiag file:", subItems: [
-                "Press the Windows key, type dxdiag, and run the program",
-                "Click 'Save All Information'",
-                "Save the file to a path"
-            ]},
-        { id: 6,
-            text: "Upload these files to an external site (e.g., WeTransfer, Google Drive) and link in your report." },
-        { id: 7, text: "Answer:", subItems: [
-                "Were you able to reproduce the bug?",
-                "Where did it occur?",
-                "Has it been reported before?"
-            ]},
-        { id: 8, text: "Use appropriate tags when submitting your report." },
-    ];
-
     constructor() {
         super(...arguments);
         if(this.args.model) {
@@ -54,9 +30,9 @@ export default class BugReportInstructionsModal extends Component {
     get hasMissingInformation() {
         return (
             this.args.model.missingDxdiag
-            /* this.args.model.missingImage ||
+            this.args.model.missingImage ||
             this.hasMissingLogs ||
-            (this.args.model.missingTags && this.args.model.isCreatingTopic) */
+            (this.args.model.missingTags && this.args.model.isCreatingTopic)
         );
     }  /**
      * Computed property that checks if the logs are missing.
