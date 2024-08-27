@@ -29,7 +29,7 @@ export default class BugReportInstructionsModal extends Component {
      */
     get hasMissingInformation() {
         return (
-            this.args.model.missingDxdiag
+            this.args.model.missingDxdiag ||
             this.args.model.missingImage ||
             this.hasMissingLogs ||
             (this.args.model.missingTags && this.args.model.isCreatingTopic)
