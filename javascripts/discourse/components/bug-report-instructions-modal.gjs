@@ -1,10 +1,10 @@
 import Component from "@glimmer/component";
 import {tracked} from "@glimmer/tracking";
+import {action} from "@ember/object";
 import {inject as service} from "@ember/service";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
 import dIcon from "discourse-common/helpers/d-icon";
-import {action} from "@ember/object";
 
 
 export default class BugReportInstructionsModal extends Component {
@@ -32,6 +32,7 @@ export default class BugReportInstructionsModal extends Component {
             this.args.model.missingDxdiag ||
             this.args.model.missingImage ||
             this.hasMissingLogs ||
+            this.hasMissingWeblink ||
             (this.args.model.missingTags && this.args.model.isCreatingTopic)
         );
     }  /**
@@ -42,6 +43,14 @@ export default class BugReportInstructionsModal extends Component {
         return (
             !this.args.model.logs.playerLog && !this.args.model.logs.playerPrevLog && !this.args.model.logs.datastore
         );
+    }
+
+    /**
+     * Computed property that checks if the weblink is missing.
+     * @returns {boolean} True if the weblink is missing, false otherwise.
+     */
+    get hasMissingWeblink() {
+        return !this.args.model.weblinks.googleDrive && !this.args.model.weblinks.wetransfer;
     }
 
      /**
@@ -108,6 +117,7 @@ export default class BugReportInstructionsModal extends Component {
                                     </ul>
                                 </div>
                             </li>
+                             <li>{{dIcon (this.getStatusIcon this.hasMissingWeblink)}} <span class="{{if this.hasMissingWeblink "not-found"}}">Upload these files to an external site (e.g., <code class="{{if @model.weblinks.wetransfer "hint-found"}}">WeTransfer</code>, <code  class="{{if @model.weblinks.googleDrive "hint-found"}}">Google Drive</code>) and link in your report.</span></li>
                             
                              <li>
                                 {{#if this.args.model.isCreatingTopic}}
@@ -119,7 +129,7 @@ export default class BugReportInstructionsModal extends Component {
                                 {{/if}}
                             </li>
 
-                                 <li>{{dIcon "hand-point-right"}} <span>Respond in English.</span></li>
+                            <li>{{dIcon "hand-point-right"}} <span>Respond in English.</span></li>
                             <li>{{dIcon "hand-point-right"}} 
                                 
                                 <div>
@@ -127,7 +137,7 @@ export default class BugReportInstructionsModal extends Component {
                                     <code>%USERPROFILE%\AppData\LocalLow\Moon Studios\NoRestForTheWicked\backtrace\crashpad\reports</code>
                                 </div>
                             </li>
-                            <li>{{dIcon "hand-point-right"}}  <span>Upload these files to an external site (e.g., WeTransfer, Google Drive) and link in your report.</span></li>
+                           
                             <li>{{dIcon "hand-point-right"}}  
                                 <div>
                                     <span>Answer:</span>

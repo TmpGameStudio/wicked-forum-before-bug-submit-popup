@@ -92,6 +92,10 @@ export default class BugReportReplyProxyButton extends Component {
             const hasAttachment = this.composer.model?.uploadedFiles?.length > 0;
             const hasImage = composerContent.includes('![');
             const hasZipFile = this.composer.model?.uploadedFiles?.some(file => file.extension === 'zip');
+            const weblinks = {
+                googleDrive: /https?:\/\/(drive|docs)\.google\.com/.test(composerContent),
+                wetransfer: /https?:\/\/(we\.tl\/t-[A-Za-z0-9]+|wetransfer\.com)/.test(composerContent)
+            };
             const hasTags = this.composer.model?.tags?.length > 0;
             const isCreatingTopic = this.composer.model?.creatingTopic;
             const isNew = this.composer.model?.isNew;
@@ -110,6 +114,7 @@ export default class BugReportReplyProxyButton extends Component {
                     missingImage: !hasImage,
                     missingZipFile: !hasZipFile,
                     missingTags: !hasTags,
+                    weblinks,
                     logs,
                     isCreatingTopic,
                     closeModalAndSubmit: this.closeModalAndSubmit
