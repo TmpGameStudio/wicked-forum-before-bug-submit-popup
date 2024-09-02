@@ -27,6 +27,7 @@ export default class BugReportReplyProxyButton extends Component {
 
         this.localStorageKey = settings.local_storage_key;
         this.wickedBugsCategoryId = settings.wicked_bugs_category_id;
+        this.wickedBugsCategoryUrl = settings.wicked_bugs_category_url;
 
         if(!this.isWickedBugsCategory()) {
             return;
@@ -85,9 +86,9 @@ export default class BugReportReplyProxyButton extends Component {
             const composerContent = this.composer.model?.reply || '';
             const hasDxdiag = composerContent.toLowerCase().includes('dxdiag');
             const logs = {
-                playerLog: composerContent.toLowerCase().includes('player.log'),
-                playerPrevLog: composerContent.toLowerCase().includes('player-prev.log'),
-                datastore: composerContent.toLowerCase().includes('datastore')
+                playerLog: composerContent.includes('[player.log|attachment](upload://'),
+                playerPrevLog: composerContent.includes('[player-prev.log|attachment](upload://'),
+                datastore: composerContent.includes('[datastore.zip|attachment](upload://')
             };
             const hasAttachment = this.composer.model?.uploadedFiles?.length > 0;
             const hasImage = composerContent.includes('![');
@@ -138,7 +139,7 @@ export default class BugReportReplyProxyButton extends Component {
   isWickedBugsCategory() {
     // First, check the URL in case user creates new topic under WickedBugs category
     const currentURL = this.router.currentURL;
-    if (currentURL.includes("/c/staff/3")) {
+    if (currentURL.includes(this.wickedBugsCategoryUrl)) {
       return true;
     }
 
