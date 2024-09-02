@@ -1,21 +1,20 @@
-// components/heart-button.gjs
 import Component from "@glimmer/component";
 import {tracked} from "@glimmer/tracking";
 import {getOwner} from "@ember/application";
 import {action} from "@ember/object";
-import {not} from "@ember/object/computed";
 import {schedule} from "@ember/runloop";
 import {inject as service} from "@ember/service";
 import DButton from "discourse/components/d-button";
 import BugReportInstructionsModal from "./bug-report-instructions-modal";
+import {getComposerProperties} from './utils';
 
 export default class BugReportReplyProxyButton extends Component {
     @service modal;
     @service siteSettings;
-     @service router;
-    @service composer; 
+    @service router;
+    @service composer;
 
-    @tracked isCreatingTopic = this.composer.model?.creatingTopic;;
+    @tracked isCreatingTopic = this.composer.model?.creatingTopic;
 
     localStorageKey = undefined;
     wickedBugsCategoryId = undefined;
@@ -32,10 +31,6 @@ export default class BugReportReplyProxyButton extends Component {
         if(!this.isWickedBugsCategory()) {
             return;
         }
-
-      /*   if(this.userDismissedInstructions()) {
-            return;
-        } */
 
         schedule('afterRender', () => {
             this.toggleShowProxyReplyButton(true);
@@ -83,42 +78,22 @@ export default class BugReportReplyProxyButton extends Component {
     @action
     onProxyReplyClicked() {
         schedule('afterRender', () => {
-            const composerContent = this.composer.model?.reply || '';
-            const hasDxdiag = composerContent.toLowerCase().includes('dxdiag');
-            const logs = {
-                playerLog: composerContent.includes('[player.log|attachment](upload://'),
-                playerPrevLog: composerContent.includes('[player-prev.log|attachment](upload://'),
-                datastore: composerContent.includes('[datastore.zip|attachment](upload://')
-            };
-            const hasAttachment = this.composer.model?.uploadedFiles?.length > 0;
-            const hasImage = composerContent.includes('![');
-            const hasZipFile = this.composer.model?.uploadedFiles?.some(file => file.extension === 'zip');
-            const weblinks = {
-                googleDrive: /https?:\/\/(drive|docs)\.google\.com/.test(composerContent),
-                wetransfer: /https?:\/\/(we\.tl\/t-[A-Za-z0-9]+|wetransfer\.com)/.test(composerContent)
-            };
-            const hasTags = this.composer.model?.tags?.length > 0;
-            const isCreatingTopic = this.composer.model?.creatingTopic;
-            const isNew = this.composer.model?.isNew;
-            const topicHighestPostNumber = this.composer.model?.topic?.highest_post_number;
-
-            console.log({composerContent, hasDxdiag, logs, hasAttachment, hasImage, hasZipFile, hasTags, isCreatingTopic, isNew, topicHighestPostNumber});
-            console.log('Composer service:', this.composer);
-            console.log('Composer model:', this.composer.model);
+            const composer = this.composer;
+            const properties = getComposerProperties(composer);
 
             this.modal.show(BugReportInstructionsModal, {
                 model: {
                     initialValue: false,
                     isShown: true,
-                    missingDxdiag: !hasDxdiag,
-                    missingAttachment: !hasAttachment,
-                    missingImage: !hasImage,
-                    missingZipFile: !hasZipFile,
-                    missingTags: !hasTags,
-                    weblinks,
-                    logs,
-                    isCreatingTopic,
-                    closeModalAndSubmit: this.closeModalAndSubmit
+                    missingDxdiag: !properties.hasDxdiag,
+                    missingAttachment: !properties.hasAttachment,
+                    missingImage: !properties.hasImage,
+                    missingZipFile: !properties.hasZipFile,
+                    missingTags: !properties.hasTags,
+                    closeModalAndSubmit: this.closeModalAndSubmit,
+                    weblinks: properties.weblinks,
+                    logs: properties.logs,
+                    isCreatingTopic: properties.isCreatingTopic
                 }
             });
         });
@@ -132,37 +107,37 @@ export default class BugReportReplyProxyButton extends Component {
         return localStorage.getItem(this.localStorageKey) === 'true';
     }
 
-   /**
-   * Checks if the current page is in the Wicked Bugs category.
-   * @returns {boolean} True if the page is in the Wicked Bugs category, false otherwise.
-   */
-  isWickedBugsCategory() {
-    // First, check the URL in case user creates new topic under WickedBugs category
-    const currentURL = this.router.currentURL;
-    if (currentURL.includes(this.wickedBugsCategoryUrl)) {
-      return true;
+    /**
+     * Checks if the current page is in the Wicked Bugs category.
+     * @returns {boolean} True if the page is in the Wicked Bugs category, false otherwise.
+     */
+    isWickedBugsCategory() {
+        // First, check the URL in case user creates new topic under WickedBugs category
+        const currentURL = this.router.currentURL;
+        if (currentURL.includes(this.wickedBugsCategoryUrl)) {
+            return true;
+        }
+
+        // If URL check fails, fall back to checking the topic controller
+        const topicController = getOwner(this).lookup("controller:topic");
+
+        if (!topicController || !topicController.model) {
+            return false;
+        }
+
+        return topicController.model.category_id === this.wickedBugsCategoryId;
     }
 
-    // If URL check fails, fall back to checking the topic controller
-    const topicController = getOwner(this).lookup("controller:topic");
-
-    if (!topicController || !topicController.model) {
-      return false;
+    @action
+    closeModalAndSubmit() {
+        this.modal.close();
+        this.toggleMainReplyButton(true);
+        this.toggleShowProxyReplyButton(false);
+        this.submit();
     }
 
-    return topicController.model.category_id === this.wickedBugsCategoryId;
-  }
-
-  @action
-  closeModalAndSubmit() {
-    this.modal.close();
-    this.toggleMainReplyButton(true);
-    this.toggleShowProxyReplyButton(false);
-    this.submit();
-  }
-
-  submit() {
-    const button = document.querySelector('#reply-control .save-or-cancel .btn-primary');
-    button.click();
-  }
+    submit() {
+        const button = document.querySelector('#reply-control .save-or-cancel .btn-primary');
+        button.click();
+    }
 }

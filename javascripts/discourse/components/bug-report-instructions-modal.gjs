@@ -53,7 +53,7 @@ export default class BugReportInstructionsModal extends Component {
         return !this.args.model.weblinks.googleDrive && !this.args.model.weblinks.wetransfer;
     }
 
-     /**
+    /**
      * Returns the appropriate icon based on whether the item is missing or not
      * @param {boolean} isMissing - Whether the item is missing
      * @returns {string} The icon name to be used
@@ -61,7 +61,7 @@ export default class BugReportInstructionsModal extends Component {
     getStatusIcon(isMissing) {
         return isMissing ? "exclamation-triangle" : "check-circle";
     }
-    
+
     @action
     closeModalAndSubmit() {
         this.args.model.isShown = false;
@@ -108,7 +108,7 @@ export default class BugReportInstructionsModal extends Component {
 
                             <li>
                                  {{dIcon (this.getStatusIcon @model.missingDxdiag)}}
-                                 <div>    
+                                 <div>
                                     <span class="{{if @model.missingDxdiag "not-found"}}">Include the <em>dxdiag</em> file:</span>
                                     <ul>
                                         <li>Press the Windows key, type <code>dxdiag</code>, and run the program</li>
@@ -118,27 +118,27 @@ export default class BugReportInstructionsModal extends Component {
                                 </div>
                             </li>
                              <li>{{dIcon (this.getStatusIcon this.hasMissingWeblink)}} <span class="{{if this.hasMissingWeblink "not-found"}}">Upload these files to an external site (e.g., <code class="{{if @model.weblinks.wetransfer "hint-found"}}">WeTransfer</code>, <code  class="{{if @model.weblinks.googleDrive "hint-found"}}">Google Drive</code>) and link in your report.</span></li>
-                            
+
                              <li>
                                 {{#if this.args.model.isCreatingTopic}}
                                     {{dIcon (this.getStatusIcon @model.missingTags)}}
                                     <span class="{{if @model.missingTags "not-found"}}">Use appropriate tags when submitting your report.</span>
                                 {{else}}
-                                    {{dIcon "hand-point-right"}} 
+                                    {{dIcon "hand-point-right"}}
                                     <span>Use appropriate tags when submitting your report.</span>
                                 {{/if}}
                             </li>
 
                             <li>{{dIcon "hand-point-right"}} <span>Respond in English.</span></li>
-                            <li>{{dIcon "hand-point-right"}} 
-                                
+                            <li>{{dIcon "hand-point-right"}}
+
                                 <div>
                                     If you experience crashes, include files from: <br>
                                     <code>%USERPROFILE%\AppData\LocalLow\Moon Studios\NoRestForTheWicked\backtrace\crashpad\reports</code>
                                 </div>
                             </li>
-                           
-                            <li>{{dIcon "hand-point-right"}}  
+
+                            <li>{{dIcon "hand-point-right"}}
                                 <div>
                                     <span>Answer:</span>
                                     <ul>
