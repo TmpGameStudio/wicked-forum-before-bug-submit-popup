@@ -1,18 +1,20 @@
-// components/heart-button.gjs
+import Component from "@glimmer/component";
 import {tracked} from "@glimmer/tracking";
+import {getOwner} from "@ember/application";
 import {action} from "@ember/object";
+import {schedule} from "@ember/runloop";
 import {inject as service} from "@ember/service";
 import DButton from "discourse/components/d-button";
-import PostTextSelection from "discourse/components/post-text-selection";
 import BugReportInstructionsModal from "./bug-report-instructions-modal";
-import {getOwner} from "@ember/application";
-import Component from "@glimmer/component";
-import {schedule} from "@ember/runloop";
+import {getComposerProperties} from './utils';
 
 export default class BugReportReplyProxyButton extends Component {
     @service modal;
     @service siteSettings;
-     @service router;
+    @service router;
+    @service composer;
+
+    @tracked isCreatingTopic = this.composer.model?.creatingTopic;
 
     localStorageKey = undefined;
     wickedBugsCategoryId = undefined;
@@ -24,31 +26,26 @@ export default class BugReportReplyProxyButton extends Component {
 
         this.localStorageKey = settings.local_storage_key;
         this.wickedBugsCategoryId = settings.wicked_bugs_category_id;
+        this.wickedBugsCategoryUrl = settings.wicked_bugs_category_url;
 
-       if(!this.isWickedBugsCategory()) {
-            return;
-       }
-
-        if(this.userDismissedInstructions()) {
+        if(!this.isWickedBugsCategory()) {
             return;
         }
 
-
-         schedule('afterRender', () => {
-        this.toggleShowProxyReplyButton(true);
+        schedule('afterRender', () => {
+            this.toggleShowProxyReplyButton(true);
             this.toggleMainReplyButton(false);
         });
     }
 
-
     <template>
          {{#if this._showProxyReplyButton}}
             <DButton
-                @action={{this.onProxyReplyClicked}}
-                @icon="reply"  
-                @translatedLabel="Reply"
-                class="btn-primary"
-            />
+            @action={{this.onProxyReplyClicked}}
+            @icon={{if this.isCreatingTopic "plus" "reply"}}
+            @translatedLabel={{if this.isCreatingTopic "Create Topic" "Reply"}}
+            class="btn-primary"
+    />
         {{/if}}
     </template>
 
@@ -68,26 +65,38 @@ export default class BugReportReplyProxyButton extends Component {
      * Toggles the visibility of the proxy reply button.
      */
     @action
-    toggleShowProxyReplyButton() {
-        this._showProxyReplyButton = !this._showProxyReplyButton;
+    toggleShowProxyReplyButton(show) {
+        this._showProxyReplyButton = show;
     }
 
     /**
      * Handles the click event on the proxy reply button.
      * This method shows the BugReportInstructionsModal, toggles the visibility
      * of the main reply button, and hides the proxy reply button.
+     * It also checks for specific content in the composer.
      */
     @action
     onProxyReplyClicked() {
-        this.modal.show(BugReportInstructionsModal, {
-            model: {
-                initialValue: false,
-                isShown: true,
-            }
-        });
+        schedule('afterRender', () => {
+            const composer = this.composer;
+            const properties = getComposerProperties(composer);
 
-        this.toggleMainReplyButton(true);
-        this.toggleShowProxyReplyButton(false);
+            this.modal.show(BugReportInstructionsModal, {
+                model: {
+                    initialValue: false,
+                    isShown: true,
+                    missingDxdiag: !properties.hasDxdiag,
+                    missingAttachment: !properties.hasAttachment,
+                    missingImage: !properties.hasImage,
+                    missingZipFile: !properties.hasZipFile,
+                    missingTags: !properties.hasTags,
+                    closeModalAndSubmit: this.closeModalAndSubmit,
+                    weblinks: properties.weblinks,
+                    logs: properties.logs,
+                    isCreatingTopic: properties.isCreatingTopic
+                }
+            });
+        });
     }
 
     /**
@@ -99,23 +108,36 @@ export default class BugReportReplyProxyButton extends Component {
     }
 
     /**
-   * Checks if the current page is in the Wicked Bugs category.
-   * @returns {boolean} True if the page is in the Wicked Bugs category, false otherwise.
-   */
-  isWickedBugsCategory() {
-    // First, check the URL in case user creates new topic under WickedBugs category
-    const currentURL = this.router.currentURL;
-    if (currentURL.includes("/c/wicked-bug-reporting/13")) {
-      return true;
+     * Checks if the current page is in the Wicked Bugs category.
+     * @returns {boolean} True if the page is in the Wicked Bugs category, false otherwise.
+     */
+    isWickedBugsCategory() {
+        // First, check the URL in case user creates new topic under WickedBugs category
+        const currentURL = this.router.currentURL;
+        if (currentURL.includes(this.wickedBugsCategoryUrl)) {
+            return true;
+        }
+
+        // If URL check fails, fall back to checking the topic controller
+        const topicController = getOwner(this).lookup("controller:topic");
+
+        if (!topicController || !topicController.model) {
+            return false;
+        }
+
+        return topicController.model.category_id === this.wickedBugsCategoryId;
     }
 
-    // If URL check fails, fall back to checking the topic controller
-    const topicController = getOwner(this).lookup("controller:topic");
-
-    if (!topicController || !topicController.model) {
-      return false;
+    @action
+    closeModalAndSubmit() {
+        this.modal.close();
+        this.toggleMainReplyButton(true);
+        this.toggleShowProxyReplyButton(false);
+        this.submit();
     }
 
-    return topicController.model.category_id === this.wickedBugsCategoryId;
-  }
+    submit() {
+        const button = document.querySelector('#reply-control .save-or-cancel .btn-primary');
+        button.click();
+    }
 }

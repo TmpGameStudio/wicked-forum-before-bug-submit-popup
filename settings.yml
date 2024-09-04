@@ -1,6 +1,9 @@
 wicked_bugs_category_id: 
   default: 13
   description: "The ID of the Wicked Bugs forum category where bug reports are posted and the instructions are displayed"
+wicked_bugs_category_url: 
+  default: "/c/staff/3"
+  description: "This is the URL of the Wicked Bugs category. It is used to check if the current topic is in the Wicked Bugs category."
 local_storage_key: 
   default: "hideBugreportInstructionsBeforeSubmit"
   description: "The local storage key used to store whether the bug submit instructions have been hidden by the user"
