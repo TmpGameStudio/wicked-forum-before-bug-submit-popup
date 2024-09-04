@@ -1,8 +1,8 @@
-import {apiInitializer} from "discourse/lib/api";
-import BugReportInstructionsModal from "../components/bug-report-instructions-modal";
 import {getOwner} from "@ember/application";
+import {apiInitializer} from "discourse/lib/api";
 import I18n from "I18n";
-import {getComposerProperties} from '../components/utils'
+import BugReportInstructionsModal from "../components/bug-report-instructions-modal";
+import {getComposerProperties} from '../components/utils';
 
 export default apiInitializer("0.11.1", api => {
     // Handle opening of the bug instructions modal from inside the d-editor
@@ -35,7 +35,7 @@ export default apiInitializer("0.11.1", api => {
 
     // Add a button to the toolbar
     api.onToolbarCreate(tb => {
-        const translation = I18n.t(themePrefix("toolbar.open_bug_instructions"))
+        const translation = I18n.t(themePrefix("toolbar.open_bug_instructions"));
 
         tb.addButton({
             id: 'bug-instructions-button',
@@ -43,7 +43,7 @@ export default apiInitializer("0.11.1", api => {
             icon: 'info-circle',
             sendAction: (event) => tb.context.send('openBugInstructionsModal', event),
             title: translation
-        })
+        });
     });
 
 });

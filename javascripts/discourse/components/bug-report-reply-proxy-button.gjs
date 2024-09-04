@@ -33,8 +33,13 @@ export default class BugReportReplyProxyButton extends Component {
         }
 
         schedule('afterRender', () => {
-            this.toggleShowProxyReplyButton(true);
-            this.toggleMainReplyButton(false);
+            const composer = this.composer;
+            const properties = getComposerProperties(composer);
+
+            if(properties.isCreatingTopic) {
+                this.toggleShowProxyReplyButton(true);
+                this.toggleMainReplyButton(false);
+            }
         });
     }
 
